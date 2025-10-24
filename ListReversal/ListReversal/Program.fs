@@ -1,2 +1,9 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+﻿module ListReversal
+
+///  function that reverses a list takes a list of integers as a parameter
+let reverse list =
+    let rec reverseAcc acc list =
+        match list with
+        | [] -> acc
+        | head :: tail -> reverseAcc (head :: acc) tail
+    reverseAcc [] list
