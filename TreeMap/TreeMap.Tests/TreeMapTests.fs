@@ -90,6 +90,3 @@ let ``mapTree with balanced tree`` () =
         Node(2,
             Node(1, Node(0, Empty, Empty), Node(1, Empty, Empty)),
             Node(3, Node(2, Empty, Empty), Node(4, Empty, Empty))))
-
-[<EntryPoint>]
-let main _ = 0
