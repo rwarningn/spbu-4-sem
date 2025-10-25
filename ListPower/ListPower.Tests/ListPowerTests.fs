@@ -58,6 +58,3 @@ let ``Power list length is m+1`` () =
 let ``Power list elements are in ascending order`` () =
     let result = powerList 2 5
     result |> should equal (List.sort result)
-
-[<EntryPoint>]
-let main _ = 0
