@@ -58,3 +58,23 @@ let ``Power list length is m+1`` () =
 let ``Power list elements are in ascending order`` () =
     let result = powerList 2 5
     result |> should equal (List.sort result)
+
+[<Test>]
+let ``Power list with negative n and positive m returns empty list`` () =
+    let result = powerList -3 5
+    result |> should be Empty
+
+[<Test>]
+let ``Power list with negative n and m=0 returns empty list`` () =
+    let result = powerList -2 0
+    result |> should be Empty
+
+[<Test>]
+let ``Power list with negative n and negative m returns empty list`` () =
+    let result = powerList -5 -3
+    result |> should be Empty
+
+[<Test>]
+let ``Power list with n=-1 and m=3 returns empty list`` () =
+    let result = powerList -1 3
+    result |> should be Empty
