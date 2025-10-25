@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{mathtext}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+
+\title{Нормализация}
+
+\begin{document}
+\maketitle
+
+\[
+((\lambda a.(\lambda b.b\ b)\ (\lambda b.b\ b))\ b)\ ((\lambda c.(c\ b))\ (\lambda a.a))
+\]
+
+\[
+((\lambda b.b\ b)\ (\lambda b.b\ b))\ ((\lambda c.(c\ b))\ (\lambda a.a)) \rightarrow_\beta
+\]
+
+\[
+((\lambda b.b\ b)\ (\lambda b.b\ b))\ ((\lambda a.a)\ b) \rightarrow_\beta
+\]
+
+\[
+((\lambda b.b\ b)\ (\lambda b.b\ b))\ b \rightarrow_\beta
+\]
+
+\[
+((\lambda b.b\ b)\ (\lambda b.b\ b))\ b \rightarrow_\beta \dots
+\]
+
+Выражение $((\lambda b.b\ b)\ (\lambda b.b\ b))$ является самым левым внешним редексом. При $\beta$-редукции оно редуцируется само в себя:
+
+\[
+(\lambda b.b\ b)\ (\lambda b.b\ b) \rightarrow_\beta (\lambda b.b\ b)\ (\lambda b.b\ b) \rightarrow_\beta \dots
+\]
+
+\end{document}
