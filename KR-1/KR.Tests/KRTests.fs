@@ -19,6 +19,7 @@ let ``The element is correct after changing the number`` () =
     seventhElement |> should equal 4
 
 // test for findLargestPalindrome
+[<Test>]
 let ``The largest palindrome from the product of two 3-digit numbers should be found correctly``() =
         let expected = 906609       
         let actual = findLargestPalindrome ()
