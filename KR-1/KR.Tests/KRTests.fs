@@ -18,3 +18,8 @@ let ``The element is correct after changing the number`` () =
     let seventhElement = repeatingNumbersSeq |> Seq.item 6
     seventhElement |> should equal 4
 
+// test for findLargestPalindrome
+let ``The largest palindrome from the product of two 3-digit numbers should be found correctly``() =
+        let expected = 906609       
+        let actual = findLargestPalindrome ()
+        actual |> should equal expected

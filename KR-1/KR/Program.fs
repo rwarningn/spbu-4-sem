@@ -1,6 +1,7 @@
 ﻿module KR
 
 open System
+open System.Threading
 
 /// creates an infinitive sequence of numbers where each number is repeated n times
 let repeatingNumbersSeq = 
@@ -20,5 +21,3 @@ let findLargestPalindrome () =
           yield i * j }
     |> Seq.filter isPalindrome
     |> Seq.max
-
-
