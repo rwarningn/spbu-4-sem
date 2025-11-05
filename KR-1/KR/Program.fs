@@ -1,5 +1,6 @@
 ﻿module KR
 
+open System
 
 /// creates an infinitive sequence of numbers where each number is repeated n times
 let repeatingNumbersSeq = 
