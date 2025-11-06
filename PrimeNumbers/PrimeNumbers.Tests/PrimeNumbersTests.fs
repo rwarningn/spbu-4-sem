@@ -4,49 +4,19 @@ open NUnit.Framework
 open FsUnit
 open PrimeNumbers
 
-[<Test>]
-let ``2 is a prime number`` () =
-    isPrime 2 |> should equal true
-
-[<Test>]
-let ``3 is a prime number`` () =
-    isPrime 3 |> should equal true
-
-[<Test>]
-let ``4 is not a prime number`` () =
-    isPrime 4 |> should equal false
-
-[<Test>]
-let ``5 is a prime number`` () =
-    isPrime 5 |> should equal true
-
-[<Test>]
-let ``10 is not a prime number`` () =
-    isPrime 10 |> should equal false
-
-[<Test>]
-let ``11 is a prime number`` () =
-    isPrime 11 |> should equal true
-
-[<Test>]
-let ``1 is not a prime number`` () =
-    isPrime 1 |> should equal false
-
-[<Test>]
-let ``0 is not a prime number`` () =
-    isPrime 0 |> should equal false
-
-[<Test>]
-let ``Negative numbers are not prime`` () =
-    isPrime -5 |> should equal false
-
-[<Test>]
-let ``Large prime 97 is prime`` () =
-    isPrime 97 |> should equal true
-
-[<Test>]
-let ``Large non-prime 100 is not prime`` () =
-    isPrime 100 |> should equal false
+[<TestCase(2, true)>]
+[<TestCase(3, true)>]
+[<TestCase(4, false)>]
+[<TestCase(5, true)>]
+[<TestCase(10, false)>]
+[<TestCase(11, true)>]
+[<TestCase(1, false)>]
+[<TestCase(0, false)>]
+[<TestCase(-5, false)>]
+[<TestCase(97, true)>]
+[<TestCase(100, false)>]
+let ``isPrime returns correct result`` (n: int) (expected: bool) =
+    isPrime n |> should equal expected
 
 [<Test>]
 let ``First 10 primes are correct`` () =
