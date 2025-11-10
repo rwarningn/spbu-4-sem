@@ -4,7 +4,6 @@ open System
 open System.Net.Http
 open System.Text.RegularExpressions
 
-
 /// extracts only http:// links from html
 let extractLinks (html: string) : string list = 
     let rx = Regex("<a\\s+[^>]*href=\"(http://[^\"]+)\"", RegexOptions.IgnoreCase)
