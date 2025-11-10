@@ -20,23 +20,31 @@ let private download (client: HttpClient) (url: string) = async {
     return s
 }
 
-/// downloads root page, extract links, download each in parallel and print sizes
-let crawlAndPrintWith (client: HttpClient) (url: string) = async {
+/// downloads root page, extract links, download each in parallel and reports sizes
+let crawlAndReportWith (client: HttpClient) (printer: string -> unit) (url: string) = async {
     let! main = download client url
     let links = extractLinks main
 
-    let! results = 
+    let! results =
         links
         |> List.map (fun u -> async {
-            let! content = download client u
-            return (u, content.Length)
+            try
+                let! content = download client u
+                return Some (u, content.Length)
+            with ex ->
+                printer (sprintf "Failed: %s (%s)" u ex.Message)
+                return None
         })
         |> Async.Parallel
 
-    results |> Array.iter (fun (u, len) -> printfn "%s - %d" u len)
+    results
+    |> Array.choose id
+    |> Array.iter (fun (u, len) -> printer (sprintf "%s - %d" u len))
 }
 
-/// wrapper that creates its own HttpClient
-let crawlAndPrint (url: string) = 
-    use client = new HttpClient()
-    crawlAndPrintWith client url
+/// wrapper that creates its own HttpClient and prints to console
+let crawlAndPrint (url: string) =
+    async {
+        use client = new HttpClient()
+        return! crawlAndReportWith client (printfn "%s") url
+    }

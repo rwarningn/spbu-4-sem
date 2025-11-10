@@ -4,7 +4,6 @@ open MiniCrawler
 open NUnit.Framework
 open FsUnit
 open System
-open System.IO
 open System.Net
 open System.Net.Http
 open RichardSzalay.MockHttp
@@ -13,10 +12,10 @@ open RichardSzalay.MockHttp
 type ``MiniCrawler tests`` () =
 
     // creates mock HttpClient
-    let makeMockClient (map: (string * string) list) =
+    let makeMockClient (map: (string * HttpResponseMessage) list) =
         let handler = new MockHttpMessageHandler()
-        for (url, content) in map do
-            handler.When(url).Respond(HttpStatusCode.OK, new StringContent(content)) |> ignore
+        for (url, resp) in map do
+            handler.When(url).Respond(fun _ -> resp) |> ignore
         handler.ToHttpClient()
 
     [<Test>]
@@ -34,27 +33,46 @@ type ``MiniCrawler tests`` () =
         extractLinks html |> should equal ["http://x.com"]
 
     [<Test>]
-    member _.``crawlAndPrintWith downloads linked pages and prints their lengths`` () =
+    member _.``crawlAndReportWith downloads linked pages and reports their lengths`` () =
         let root = "http://root.com"
         let c1 = "http://c1.com"
         let c2 = "http://c2.com"
         let rootHtml = $"""<a href="{c1}">1</a><a href="{c2}">2</a>"""
 
-        let client = makeMockClient [
-            root, rootHtml
-            c1, "AAA"
-            c2, "HelloWorld"
-        ]
+        let client =
+            makeMockClient [
+                root, new HttpResponseMessage(HttpStatusCode.OK, Content = new StringContent(rootHtml))
+                c1,  new HttpResponseMessage(HttpStatusCode.OK, Content = new StringContent("AAA"))    
+                c2,  new HttpResponseMessage(HttpStatusCode.OK, Content = new StringContent("HelloWorld")) 
+            ]
 
-        use sw = new StringWriter()
-        let old = Console.Out
-        Console.SetOut(sw)
+        // collect output via injected printer
+        let out = System.Collections.Generic.List<string>()
+        let printer (s:string) = out.Add s
 
-        try
-            Async.RunSynchronously (crawlAndPrintWith client root)
-        finally
-            Console.SetOut(old)
+        Async.RunSynchronously (crawlAndReportWith client printer root)
 
-        let output = sw.ToString().Replace("\r\n", "\n")
-        output |> should contain (sprintf "%s - %d" c1 3)
-        output |> should contain (sprintf "%s - %d" c2 10)
+        out |> Seq.exists ((=) (sprintf "%s - %d" c1 3))  |> should equal true
+        out |> Seq.exists ((=) (sprintf "%s - %d" c2 10)) |> should equal true
+
+    [<Test>]
+    member _.``crawlAndReportWith handles errors and keeps going`` () =
+        let root = "http://root.com"
+        let okUrl = "http://ok.com"
+        let badUrl = "http://bad.com"
+        let rootHtml = $"""<a href="{okUrl}">ok</a><a href="{badUrl}">bad</a>"""
+
+        let client =
+            makeMockClient [
+                root,   new HttpResponseMessage(HttpStatusCode.OK, Content = new StringContent(rootHtml))
+                okUrl,  new HttpResponseMessage(HttpStatusCode.OK, Content = new StringContent("DATA"))
+                badUrl, new HttpResponseMessage(HttpStatusCode.BadRequest)
+            ]
+
+        let out = System.Collections.Generic.List<string>()
+        let printer (s:string) = out.Add s
+
+        Async.RunSynchronously (crawlAndReportWith client printer root)
+
+        out |> Seq.exists (fun s -> s.StartsWith("Failed: " + badUrl)) |> should equal true
+        out |> Seq.exists ((=) (sprintf "%s - %d" okUrl 4)) |> should equal true
